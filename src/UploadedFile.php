@@ -31,15 +31,23 @@ class UploadedFile implements Interfaces\UploadedFileInterface{
 		}
 	}
 
-	// public function save($dir, $name = null){
-	// 	if($this->getError() == UPLOAD_ERR_OK){
-	// 		if(!is_dir($dir)){
-	// 			throw new Exception();
-	// 		}
-	// 		$destination = sprintf("%s/%s", rtimr($dir, "/ "), ($name ?: $this->getName()));
-	// 		move_uploaded_file($this->getTmpName(), $destination);
-	// 	}
-	// }
+	/**
+	 * method to move an uploaded file from the tmp dir to a more permanent home
+	 * @param string $dir The destination directory
+	 * @param string $name An optional name to call the file
+	 * @return bool
+	 */
+	function saveAs($dir, $name = null){
+		if($this->getError() == UPLOAD_ERR_OK){
+			if(!is_dir($dir)){
+				throw new Exceptions\UploadErrNoDestDir;
+			}
+
+			$destination = sprintf("%s/%s", rtimr($dir, "/ "), ($name ?: $this->getName()));
+			return move_uploaded_file($this->getTmpName(), $destination);
+		}
+		return false;
+	}
 
 	/**
 	 * method to get the provided name of the uploaded file
