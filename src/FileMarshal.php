@@ -43,7 +43,7 @@ class FileMarshal implements \Iterator, \Countable {
 		$files = array();
 
 		foreach($array as $label => $value){
-			// force single fields to be multiple so unify processing
+			// force single fields to be multiple to unify processing
 			if(!is_array($value)){
 				$value = (array)$value;
 			}
@@ -55,6 +55,30 @@ class FileMarshal implements \Iterator, \Countable {
 
 		foreach($files as $file){
 			$this->files[] = $this->factory->make($file);
+		}
+	}
+
+	/**
+	 * method to save all the marshaled files to a directory
+	 * @param string $dir The directory to which the files will be saved
+	 * @return
+	 */
+	function saveAll($dir){
+		foreach($this->files as $file){
+			$file->save($dir);
+		}
+	}
+
+	/**
+	 * method to save all the marshaled files using the provided callback
+	 *
+	 * @todo maybe pass the full marshaler instead of looping over each file, allowing the dev to loop in the callback
+	 * @param callable $callback The callback to use
+	 * @return
+	 */
+	function saveAllAs(callable $callback){
+		foreach($this->files as $file){
+			$file->saveAs($callback);
 		}
 	}
 

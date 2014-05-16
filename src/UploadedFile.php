@@ -37,16 +37,28 @@ class UploadedFile implements Interfaces\UploadedFileInterface{
 	 * @param string $name An optional name to call the file
 	 * @return bool
 	 */
-	function saveAs($dir, $name = null){
+	function save($dir, $name = null){
 		if($this->getError() == UPLOAD_ERR_OK){
-			if(!is_dir($dir)){
+			$destination = sprintf("%s/%s", rtimr($dir, "/ "), ($name ?: $this->getName()));
+
+			if(!is_dir($destination)){
 				throw new Exceptions\UploadErrNoDestDir;
 			}
 
-			$destination = sprintf("%s/%s", rtimr($dir, "/ "), ($name ?: $this->getName()));
 			return move_uploaded_file($this->getTmpName(), $destination);
 		}
 		return false;
+	}
+
+	/**
+	 * method to provide a callback to which the current object is passed for the
+	 * puposes of saving that file to a destination OTHER than the current file system
+	 *
+	 * @param callable $callback The callback
+	 * @return mixed
+	 */
+	function saveAs(callable $callback){
+		return call_user_func($callback, $this);
 	}
 
 	/**
